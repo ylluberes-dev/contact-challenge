@@ -1,4 +1,4 @@
-package com.ylluberes.kenectlabs.contact_challenge.exception;
+package com.ylluberes.kenectlabs.contactchallenge.exception;
 
 public class ProviderException extends RuntimeException {
     public ProviderException(String message) {

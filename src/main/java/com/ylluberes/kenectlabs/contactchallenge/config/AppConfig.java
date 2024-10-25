@@ -1,4 +1,4 @@
-package com.ylluberes.kenectlabs.contact_challenge.config;
+package com.ylluberes.kenectlabs.contactchallenge.config;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
-
 
 
 @Configuration
@@ -30,22 +28,18 @@ public class AppConfig {
     @Value("${kenect.restclient.default.readTimeoutInMills}")
     private Integer getKenectLabReadTimeoutInMills;
 
-    @Bean(name = "kenectLabClient")
-    public WebClient webClient() {
-        return WebClient.builder().baseUrl(kenectLabBaseUrl).build();
-    }
 
     @Bean(name = "kenectLabsRestClient")
-    public RestClient kenectRestClient () {
+    public RestClient kenectRestClient() {
         return RestClient.builder()
                 .baseUrl(kenectLabBaseUrl)
-                .defaultHeader("Authorization",kenectLabBearerToken)
+                .defaultHeader("Authorization", kenectLabBearerToken)
                 .requestFactory(clientHttpRequestFactory())
                 .build();
     }
 
     @Bean(name = "modelMapper")
-    public ModelMapper modelMapper () {
+    public ModelMapper modelMapper() {
         return new ModelMapper();
     }
 

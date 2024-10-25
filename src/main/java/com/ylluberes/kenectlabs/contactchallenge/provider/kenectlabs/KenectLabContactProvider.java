@@ -1,9 +1,9 @@
-package com.ylluberes.kenectlabs.contact_challenge.provider.kenectlabs;
+package com.ylluberes.kenectlabs.contactchallenge.provider.kenectlabs;
 
-import com.ylluberes.kenectlabs.contact_challenge.exception.ProviderException;
-import com.ylluberes.kenectlabs.contact_challenge.provider.ContactProvider;
-import com.ylluberes.kenectlabs.contact_challenge.provider.kenectlabs.input.ContactRequest;
-import com.ylluberes.kenectlabs.contact_challenge.provider.kenectlabs.output.ContactResponse;
+import com.ylluberes.kenectlabs.contactchallenge.exception.ProviderException;
+import com.ylluberes.kenectlabs.contactchallenge.provider.ContactProvider;
+import com.ylluberes.kenectlabs.contactchallenge.provider.kenectlabs.input.ContactRequest;
+import com.ylluberes.kenectlabs.contactchallenge.provider.kenectlabs.output.ContactResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,8 +25,9 @@ public class KenectLabContactProvider implements ContactProvider<ContactResponse
 
     @Override
     public ContactResponse getContacts(ContactRequest contactRequest) {
-        logger.info("Trying to fetch all kenectLabs contacts");
-        ResponseEntity<ContactResponse> contactResponse = restClient.get()
+        logger.info("Trying to fetch all kenectLabs contacts page = {}", contactRequest.getPageNumber());
+        ResponseEntity<ContactResponse> contactResponse = null;
+        contactResponse = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(GET_CONTACT_ENDPOINT)
                         .queryParam("page", contactRequest.getPageNumber()).build())
@@ -36,11 +37,17 @@ public class KenectLabContactProvider implements ContactProvider<ContactResponse
                             String.format("kenectLabs api returned server error response, errorCode  %s", response.getStatusCode().value());
                     logger.error(errorMessage);
                     throw new ProviderException(errorMessage);
-                }).toEntity(ContactResponse.class);
+                }).onStatus(HttpStatusCode::is4xxClientError, ((request, response) -> {
+                    if (response.getStatusCode() == HttpStatusCode.valueOf(403)) {
+                        throw new ProviderException("KenectLabProvider return forbidden, check the token");
+                    }
+                })).toEntity(ContactResponse.class);
 
-        if (contactResponse.getStatusCode() == HttpStatusCode.valueOf(200)) {
+        if (contactResponse != null && contactResponse.getStatusCode() == HttpStatusCode.valueOf(200)) {
             ContactResponse response = contactResponse.getBody();
-            response.setPaginationDetails(extractPaginationDetails(contactResponse));
+            if(response != null) {
+                response.setPaginationDetails(extractPaginationDetails(contactResponse));
+            }
             return response;
         }
         return null;
@@ -51,10 +58,10 @@ public class KenectLabContactProvider implements ContactProvider<ContactResponse
         final HttpHeaders headers = response.getHeaders();
         int currentPage = 0, pageItems = 0, totalPages = 0, totalCount = 0;
         if (headers != null) {
-             currentPage = Integer.parseInt(headers.getFirst("Current-Page"));
-             pageItems = Integer.parseInt(headers.getFirst("Page-Items"));
-             totalPages = Integer.parseInt(headers.getFirst("Total-Pages"));
-             totalCount = Integer.parseInt(headers.getFirst("Total-Count"));
+            currentPage = Integer.parseInt(headers.getFirst("Current-Page"));
+            pageItems = Integer.parseInt(headers.getFirst("Page-Items"));
+            totalPages = Integer.parseInt(headers.getFirst("Total-Pages"));
+            totalCount = Integer.parseInt(headers.getFirst("Total-Count"));
         }
         ContactResponse.PaginationDetails paginationDetails =
                 ContactResponse.PaginationDetails.builder()
