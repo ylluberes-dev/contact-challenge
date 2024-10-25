@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +42,8 @@ public class ContactControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("API-Key", "146")
                         .header("API-Secret", "acef"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].name").value("Yasser Lluberes"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].email").value("ylluberes19@gmail.com"))
                 .andExpect(status().isOk());
     }
 
