@@ -70,7 +70,7 @@ Replace `{provider}` with a valid provider name. In this case, the only availabl
 
 
 ```bash
-curl -X GET "http://localhost:8080/api/v1/contacts/KENECT_LABS" \
+curl -X GET "http://localhost:8080/api/v1/contacts" \
 -H "Authorization: Bearer 1a32vvf14" \
 -H "API_KEY: 123456" \
 -H "API_SECRET: abcdef"
