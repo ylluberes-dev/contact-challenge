@@ -1,9 +1,9 @@
 
-# Contact Challenge API - README
+# Contact Challenge API
 
 ## Project Overview
 
-The **Contact Challenge API** is a Spring Boot-based project designed to fetch and aggregate contact data from different providers. This API provides a simple and scalable solution for interacting with third-party contact services, utilizing Java 17 and Spring WebFlux for non-blocking reactive programming.
+The **Contact Challenge API** is a Spring Boot-based project designed to fetch and aggregate contact data from different providers.
 
 ### Tech Stack
 - **Java 17**
@@ -16,7 +16,7 @@ The **Contact Challenge API** is a Spring Boot-based project designed to fetch a
 ## Requirements
 
 - **Java 17**
-- **Maven** (to build the project)
+- **Maven**
 - An IDE with Lombok annotation processing enabled (IntelliJ IDEA or Eclipse with the Lombok plugin is recommended).
 
 ## Setup and Installation
@@ -24,8 +24,14 @@ The **Contact Challenge API** is a Spring Boot-based project designed to fetch a
 ### Clone the Repository
 ```bash
 git clone https://github.com/ylluberes-dev/contact-challenge.git
-cd contact-challenge
 ```
+
+### Change to the project directory
+```cd contact-challenge```
+
+Make sure you are in ```main``` branch
+
+``` git checkout main ```
 
 ### Build the Project
 Before running the application, build the project by running:
@@ -35,14 +41,24 @@ mvn clean install
 
 ### Running the Application
 
-The API requires an environment variable `KENECT_API_TOKEN` for authentication. You can pass this token when running the Spring Boot application.
+Before running the application, you need to set the following environment variables:
 
-Use the following command to run the application:
+- `KENECT_API_TOKEN`: The bearer token for authenticating with the KENECT API.
+- `API_KEY`: The API key used for authentication.
+- `API_SECRET`: The API secret used for authentication.
+
+You can run the app with the following command
+
+#### Running the spring boot API
 ```bash
-KENECT_API_TOKEN=${TOKEN} mvn spring-boot:run
+KENECT_API_TOKEN="Bearer J7ybt6jv6pdJ4gyQP9gNonsY" API_KEY="123456" API_SECRET="abcdef" mvn spring-boot:run
 ```
 
-Ensure that you have the correct token in place to interact with the API.
+
+### Valid Providers
+Currently there is only one existing valid provider
+- `KENECT_LABS`: Fetches contacts from Kenect Labs.
+
 
 ### Endpoint Usage
 
@@ -52,20 +68,19 @@ To fetch contacts from a provider, use the following endpoint:
 
 Replace `{provider}` with a valid provider name. In this case, the only available provider is `KENECT_LABS`.
 
-#### Example Curl Command
-```bash
-curl -X GET "http://localhost:8080/api/v1/contacts/KENECT_LABS" -H "Authorization: Bearer J7ybt6jv6pdJ4gyQP9gNonsY"
-```
 
-### Valid Providers
-- `KENECT_LABS`: Fetches contacts from Kenect Labs.
+```bash
+curl -X GET "http://localhost:8080/api/v1/contacts/KENECT_LABS" \
+-H "Authorization: Bearer 1a32vvf14" \
+-H "API_KEY: 123456" \
+-H "API_SECRET: abcdef"
+```
+Make sure to use the ```API_KEY``` and ```API_SECRET``` you used as env variable when running the app in the step ```Running the spring boot API```
 
 ## Testing
 
-The project uses **Mockito** for unit testing. You can run tests using:
+You can run tests using:
 
 ```bash
 mvn test
 ```
-
-For further inquiries or issues, contact the repository maintainer.
