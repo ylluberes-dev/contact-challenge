@@ -36,8 +36,8 @@ public class ContactControllerTest {
 
     @Test
     public void testGetContacts() throws Exception {
-        when(aggregatorService.getAggregatedContacts("KENECT_LABS")).thenReturn(getDummyContacts());
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/contacts/KENECT_LABS")
+        when(aggregatorService.getAggregatedContacts()).thenReturn(getDummyContacts());
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/contacts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("API-Key", "146")
                         .header("API-Secret", "acef"))
@@ -46,8 +46,8 @@ public class ContactControllerTest {
 
     @Test
     public void testGetContactsNotValidProvider() throws Exception {
-        doThrow(NotSupportedProviderException.class).when(aggregatorService).getAggregatedContacts("CLARO");
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/contacts/CLARO")
+        doThrow(NotSupportedProviderException.class).when(aggregatorService).getAggregatedContacts();
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/contacts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("API-Key", "123")
                         .header("API-Secret", "adef"))

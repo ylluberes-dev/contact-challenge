@@ -38,7 +38,7 @@ public class AggregatorServiceTest {
     public void testAggregateContacts() {
         when(contactService.getContacts(ContactRequest.builder().pageNumber(1).build(), Provider.KENECT_LABS)).thenReturn(getContactResponse());
         when(contactService.getContacts(ContactRequest.builder().pageNumber(2).build(), Provider.KENECT_LABS)).thenReturn(getContactResponse());
-        List<ContactDTO> contactDTOList = aggregatorService.getAggregatedContacts("KENECT_LABS");
+        List<ContactDTO> contactDTOList = aggregatorService.getAggregatedContacts();
         Assertions.assertThat(contactDTOList).isNotNull();
         Assertions.assertThat(contactDTOList).isNotEmpty();
         Assertions.assertThat(contactDTOList.get(0).getName()).isEqualTo("J Anderson");
@@ -51,16 +51,12 @@ public class AggregatorServiceTest {
         for (int pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
             when(contactService.getContacts(ContactRequest.builder().pageNumber(pageNumber).build(), Provider.KENECT_LABS)).thenReturn(getContactResponseHundredPages());
         }
-        List<ContactDTO> contactDTOList = aggregatorService.getAggregatedContacts("KENECT_LABS");
+        List<ContactDTO> contactDTOList = aggregatorService.getAggregatedContacts();
         verify(contactService, times(100)).getContacts(Mockito.any(ContactRequest.class), Mockito.any(Provider.class));
         verify(modelMapper, times(100)).map(Mockito.any(), Mockito.any());
         Assertions.assertThat(contactDTOList).isNotNull();
     }
 
-    @Test(expected = NotSupportedProviderException.class)
-    public void testAggregateContactsNotValidProvider() {
-        aggregatorService.getAggregatedContacts("CLARO");
-    }
 
     private ContactResponse getContactResponse() {
         List<ContactResponse.Contact> dummyContacts = getDummyContacts();

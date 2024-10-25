@@ -26,7 +26,8 @@ public class AggregatorService {
         this.modelMapper = modelMapper;
     }
 
-    public List<ContactDTO> getAggregatedContacts(String provider) throws NotSupportedProviderException {
+    public List<ContactDTO> getAggregatedContacts() throws NotSupportedProviderException {
+        final String provider = "KENECT_LABS";
         Provider contactProvider = Provider.fromValue(provider);
         if (contactProvider != null) {
             return aggregateContacts(contactProvider);

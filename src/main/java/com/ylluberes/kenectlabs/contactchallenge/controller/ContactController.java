@@ -26,10 +26,8 @@ public class ContactController {
         this.aggregatorService = aggregatorService;
     }
 
-    @GetMapping("/{provider}")
-    @ResponseBody
-    public ResponseEntity<List<ContactDTO>> getContacts(@PathVariable String provider) {
-        logger.info("Received request for provider: {}", provider);
-        return ResponseEntity.ok(aggregatorService.getAggregatedContacts(provider));
+    @GetMapping
+    public ResponseEntity<List<ContactDTO>> getContacts() {
+        return ResponseEntity.ok(aggregatorService.getAggregatedContacts());
     }
 }
