@@ -1,6 +1,7 @@
 package com.ylluberes.kenectlabs.contact_challenge.provider.kenectlabs.output;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+@Builder
 public class ContactResponse {
     @JsonProperty("contacts")
     private List<Contact> contacts;
@@ -16,6 +18,8 @@ public class ContactResponse {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class Contact {
         @JsonProperty("id")
         private int id;

@@ -25,20 +25,27 @@ public class KenectLabContactProvider implements ContactProvider<ContactResponse
 
     @Override
     public ContactResponse getContacts(ContactRequest contactRequest) {
-        logger.info("Trying to fetch all kenectLabs contacts");
-        ResponseEntity<ContactResponse> contactResponse = restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path(GET_CONTACT_ENDPOINT)
-                        .queryParam("page", contactRequest.getPageNumber()).build())
-                .retrieve()
-                .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
-                    final String errorMessage =
-                            String.format("kenectLabs api returned server error response, errorCode  %s", response.getStatusCode().value());
-                    logger.error(errorMessage);
-                    throw new ProviderException(errorMessage);
-                }).toEntity(ContactResponse.class);
+        logger.info("Trying to fetch all kenectLabs contacts page = {}", contactRequest.getPageNumber());
+        ResponseEntity<ContactResponse> contactResponse = null;
+        try {
+            contactResponse = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(GET_CONTACT_ENDPOINT)
+                            .queryParam("page", contactRequest.getPageNumber()).build())
+                    .retrieve()
+                    .onStatus(HttpStatusCode::is5xxServerError, (request, response) -> {
+                        final String errorMessage =
+                                String.format("kenectLabs api returned server error response, errorCode  %s", response.getStatusCode().value());
+                        logger.error(errorMessage);
+                        throw new ProviderException(errorMessage);
+                    }).toEntity(ContactResponse.class);
+        } catch (Exception ex) {
+            String errorMessage = String.format("An error occurred trying to fetch KenectLabContactProvider contacts", ex);
+            logger.error(errorMessage);
+            throw new ProviderException(errorMessage);
+        }
 
-        if (contactResponse.getStatusCode() == HttpStatusCode.valueOf(200)) {
+        if (contactResponse != null && contactResponse.getStatusCode() == HttpStatusCode.valueOf(200)) {
             ContactResponse response = contactResponse.getBody();
             response.setPaginationDetails(extractPaginationDetails(contactResponse));
             return response;
@@ -51,10 +58,10 @@ public class KenectLabContactProvider implements ContactProvider<ContactResponse
         final HttpHeaders headers = response.getHeaders();
         int currentPage = 0, pageItems = 0, totalPages = 0, totalCount = 0;
         if (headers != null) {
-             currentPage = Integer.parseInt(headers.getFirst("Current-Page"));
-             pageItems = Integer.parseInt(headers.getFirst("Page-Items"));
-             totalPages = Integer.parseInt(headers.getFirst("Total-Pages"));
-             totalCount = Integer.parseInt(headers.getFirst("Total-Count"));
+            currentPage = Integer.parseInt(headers.getFirst("Current-Page"));
+            pageItems = Integer.parseInt(headers.getFirst("Page-Items"));
+            totalPages = Integer.parseInt(headers.getFirst("Total-Pages"));
+            totalCount = Integer.parseInt(headers.getFirst("Total-Count"));
         }
         ContactResponse.PaginationDetails paginationDetails =
                 ContactResponse.PaginationDetails.builder()
